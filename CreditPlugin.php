@@ -13,9 +13,10 @@
 
 namespace APP\plugins\generic\credit;
 
+use \DOMDocument;
+
 use APP\core\Application;
 use PKP\config\Config;
-
 use PKP\core\Registry;
 use PKP\facades\Locale;
 use PKP\plugins\GenericPlugin;
@@ -32,6 +33,7 @@ class CreditPlugin extends GenericPlugin
     {
         if (parent::register($category, $path, $mainContextId)) {
             if ($this->getEnabled($mainContextId)) {
+                HookRegistry::register('Form::config::before', [$this, 'addCounterRoles']);
                 HookRegistry::register('Schema::get::author', function ($hookName, $args) {
                     $schema = $args[0];
 
@@ -61,5 +63,42 @@ class CreditPlugin extends GenericPlugin
     public function getDescription()
     {
         return __('plugins.generic.credit.description');
+    }
+
+    /**
+     * Add settings to the payments form
+     *
+     * @param string $hookName
+     * @param FormComponent $form
+     */
+    public function addCounterRoles($hookName, $form)
+    {
+        import('lib.pkp.classes.components.forms.publication.PKPContributorForm');
+        if ($form->id !== FORM_CONTRIBUTOR) {
+            return;
+        }
+
+        $context = Application::get()->getRequest()->getContext();
+        if (!$context) {
+            return;
+        }
+
+        $roleList = [];
+        $doc = new DOMDocument();
+        $doc->load(dirname(__FILE__) . '/jats-schematrons/schematrons/1.0/credit-roles.xml');
+        foreach ($doc->getElementsByTagName('credit-roles') as $roles) {
+            foreach ($roles->getElementsByTagName('item') as $item) {
+                $roleList[] = ['value' => $item->getAttribute('uri'), 'label' => $item->getAttribute('term')];
+            }
+        }
+
+        $form->addField(new \PKP\components\forms\FieldSelect('contributorRoles', [
+                'label' => __('plugins.generic.credit.contributorRoles'),
+                'description' => __('plugins.generic.credit.contributorRoles.description'),
+                'options' => $roleList,
+                //'value' => $this->getSetting($context->getId(), ''),
+        ]));
+
+        return;
     }
 }

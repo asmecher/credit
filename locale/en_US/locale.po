@@ -16,3 +16,9 @@ msgstr "CRediT Plugin"
 
 msgid "plugins.generic.credit.description"
 msgstr "This plugin adds support for the CASRAI CRediT contributor vocabulary."
+
+msgid "plugins.generic.credit.contributorRoles"
+msgstr "Contributor Roles"
+
+msgid "plugins.generic.credit.contributorRoles.description"
+msgstr "Please select the contributor's roles according to the <a href=\"https://casrai.org/credit/\" target="_new">CASRAI CRediT list</a>."
