@@ -92,7 +92,7 @@ class CreditPlugin extends GenericPlugin
             }
         }
 
-        $form->addField(new \PKP\components\forms\FieldSelect('contributorRoles', [
+        $form->addField(new \PKP\components\forms\FieldOptions('contributorRoles', [
                 'label' => __('plugins.generic.credit.contributorRoles'),
                 'description' => __('plugins.generic.credit.contributorRoles.description'),
                 'options' => $roleList,
