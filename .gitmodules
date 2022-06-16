@@ -1,0 +1,3 @@
+[submodule "jats-schematrons"]
+	path = jats-schematrons
+	url = https://github.com/JATS4R/jats-schematrons
