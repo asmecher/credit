@@ -32,6 +32,15 @@ class CreditPlugin extends GenericPlugin
     {
         if (parent::register($category, $path, $mainContextId)) {
             if ($this->getEnabled($mainContextId)) {
+                HookRegistry::register('Schema::get::author', function ($hookName, $args) {
+                    $schema = $args[0];
+
+                    $schema->properties->creditRoles = (object)[
+                        'type' => 'object',
+                        'apiSummary' => true,
+                        'validation' => ['nullable']
+                    ];
+               });
             }
             return true;
         }
