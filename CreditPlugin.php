@@ -33,15 +33,19 @@ class CreditPlugin extends GenericPlugin
     {
         if (parent::register($category, $path, $mainContextId)) {
             if ($this->getEnabled($mainContextId)) {
-                HookRegistry::register('Form::config::before', [$this, 'addCounterRoles']);
+                HookRegistry::register('Form::config::before', [$this, 'addCreditRoles']);
                 HookRegistry::register('Schema::get::author', function ($hookName, $args) {
                     $schema = $args[0];
-
-                    $schema->properties->creditRoles = (object)[
-                        'type' => 'object',
-                        'apiSummary' => true,
-                        'validation' => ['nullable']
-                    ];
+                    $schema->properties->creditRoles = json_decode('{
+			"type": "array",
+			"validation": [
+				"nullable"
+			],
+			"items": {
+				"type": "string"
+                        },
+                        "default": []
+                    }');
                });
             }
             return true;
@@ -71,7 +75,7 @@ class CreditPlugin extends GenericPlugin
      * @param string $hookName
      * @param FormComponent $form
      */
-    public function addCounterRoles($hookName, $form)
+    public function addCreditRoles($hookName, $form)
     {
         import('lib.pkp.classes.components.forms.publication.PKPContributorForm');
         if ($form->id !== FORM_CONTRIBUTOR) {
@@ -83,6 +87,7 @@ class CreditPlugin extends GenericPlugin
             return;
         }
 
+        // Build a list of roles for selection in the UI.
         $roleList = [];
         $doc = new DOMDocument();
         $doc->load(dirname(__FILE__) . '/jats-schematrons/schematrons/1.0/credit-roles.xml');
@@ -92,11 +97,14 @@ class CreditPlugin extends GenericPlugin
             }
         }
 
-        $form->addField(new \PKP\components\forms\FieldOptions('contributorRoles', [
-                'label' => __('plugins.generic.credit.contributorRoles'),
-                'description' => __('plugins.generic.credit.contributorRoles.description'),
-                'options' => $roleList,
-                //'value' => $this->getSetting($context->getId(), ''),
+        $author = $form->_author ?? null;
+
+        $form->addField(new \PKP\components\forms\FieldOptions('creditRoles', [
+            'type' => 'checkbox',
+            'label' => __('plugins.generic.credit.contributorRoles'),
+            'description' => __('plugins.generic.credit.contributorRoles.description'),
+            'options' => $roleList,
+            'value' => [],
         ]));
 
         return;
