@@ -113,7 +113,7 @@ class CreditPlugin extends GenericPlugin
             'label' => __('plugins.generic.credit.contributorRoles'),
             'description' => __('plugins.generic.credit.contributorRoles.description'),
             'options' => $roleList,
-            'value' => $author->getData('creditRoles') ?? [],
+            'value' => $author?->getData('creditRoles') ?? [],
         ]));
 
         return;
