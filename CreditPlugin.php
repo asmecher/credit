@@ -21,6 +21,8 @@ use PKP\core\Registry;
 use PKP\facades\Locale;
 use PKP\plugins\GenericPlugin;
 use PKP\plugins\HookRegistry;
+use PKP\author\maps\Schema;
+use APP\author\Author;
 
 class CreditPlugin extends GenericPlugin
 {
@@ -33,6 +35,13 @@ class CreditPlugin extends GenericPlugin
     {
         if (parent::register($category, $path, $mainContextId)) {
             if ($this->getEnabled($mainContextId)) {
+                // Extend the contributor map to include CRediT roles.
+                app('maps')->extend(Schema::class, function($output, Author $item, Schema $map) {
+                    // Ensure that an empty list is passed from the API as [] rather than null.
+                    $output['creditRoles'] = $output['creditRoles'] ?? [];
+                    return $output;
+                });
+
                 HookRegistry::register('Form::config::before', [$this, 'addCreditRoles']);
                 HookRegistry::register('Schema::get::author', function ($hookName, $args) {
                     $schema = $args[0];
@@ -43,10 +52,10 @@ class CreditPlugin extends GenericPlugin
 			],
 			"items": {
 				"type": "string"
-                        },
-                        "default": []
+                        }
                     }');
-               });
+
+                });
             }
             return true;
         }
@@ -104,7 +113,7 @@ class CreditPlugin extends GenericPlugin
             'label' => __('plugins.generic.credit.contributorRoles'),
             'description' => __('plugins.generic.credit.contributorRoles.description'),
             'options' => $roleList,
-            'value' => [],
+            'value' => $author->getData('creditRoles') ?? [],
         ]));
 
         return;
