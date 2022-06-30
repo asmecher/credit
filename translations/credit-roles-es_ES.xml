@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- These informal translations were taken from https://info.orcid.org/credit-for-research-contribution/ -->
+<credit-roles>
+    <item term="Conceptualización" uri="http://credit.niso.org/contributor-roles/conceptualization/"/>
+    <item term="Curación de datos" uri="http://credit.niso.org/contributor-roles/data-curation/"/>
+    <item term="Análisis formal" uri="http://credit.niso.org/contributor-roles/formal-analysis/"/>
+    <item term="Adquisición de fondos" uri="http://credit.niso.org/contributor-roles/funding-acquisition/"/>
+    <item term="Investigación" uri="http://credit.niso.org/contributor-roles/investigation/"/>
+    <item term="Metodología" uri="http://credit.niso.org/contributor-roles/methodology/"/>
+    <item term="Administración de proyecto" uri="http://credit.niso.org/contributor-roles/project-administration/"/>
+    <item term="Recursos" uri="http://credit.niso.org/contributor-roles/resources/"/>
+    <item term="Software" uri="http://credit.niso.org/contributor-roles/software/"/>
+    <item term="Supervisión" uri="http://credit.niso.org/contributor-roles/supervision/"/>
+    <item term="Validación" uri="http://credit.niso.org/contributor-roles/validation/"/>
+    <item term="Visualización" uri="http://credit.niso.org/contributor-roles/visualization/"/>
+    <item term="Redacción - borrador original" uri="http://credit.niso.org/contributor-roles/writing-original-draft/"/>
+    <item term="Escritura, revisión y edición" uri="http://credit.niso.org/contributor-roles/writing-review-editing/"/>
+</credit-roles>

@@ -98,12 +98,8 @@ class CreditPlugin extends GenericPlugin
 
         // Build a list of roles for selection in the UI.
         $roleList = [];
-        $doc = new DOMDocument();
-        $doc->load(dirname(__FILE__) . '/jats-schematrons/schematrons/1.0/credit-roles.xml');
-        foreach ($doc->getElementsByTagName('credit-roles') as $roles) {
-            foreach ($roles->getElementsByTagName('item') as $item) {
-                $roleList[] = ['value' => $item->getAttribute('uri'), 'label' => $item->getAttribute('term')];
-            }
+        foreach ($this->getCreditRoles(Locale::getLocale()) as $uri => $name) {
+            $roleList[] = ['value' => $uri, 'label' => $name];
         }
 
         $author = $form->_author ?? null;
@@ -117,5 +113,22 @@ class CreditPlugin extends GenericPlugin
         ]));
 
         return;
+    }
+
+    public function getCreditRoles($locale) {
+        $roleList = [];
+        $doc = new DOMDocument();
+        if (!Locale::isLocaleValid($locale)) $locale = 'en_US';
+        if (file_exists($filename = dirname(__FILE__) . '/translations/credit-roles-' . $locale . '.xml')) {
+            $doc->load($filename);
+        } else {
+            $doc->load(dirname(__FILE__) . '/jats-schematrons/schematrons/1.0/credit-roles.xml');
+        }
+        foreach ($doc->getElementsByTagName('credit-roles') as $roles) {
+            foreach ($roles->getElementsByTagName('item') as $item) {
+                $roleList[$item->getAttribute('uri')] = $item->getAttribute('term');
+            }
+        }
+        return $roleList;
     }
 }

@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-11-19T11:05:26+00:00\n"
+"PO-Revision-Date: 2019-11-19T11:05:26+00:00\n"
+"Language: \n"
+
+msgid "plugins.generic.credit.name"
+msgstr "Plugin CRediT"
+
+msgid "plugins.generic.credit.description"
+msgstr "El plugin brinda soporte para el uso del vocabulario de contribución de CASRAI CRediT."
+
+msgid "plugins.generic.credit.contributorRoles"
+msgstr "Roles de Autoría"
+
+msgid "plugins.generic.credit.contributorRoles.description"
+msgstr "Por favor seleccione el rol de autoría según la lista de CASRAI CRediT <a href=\"https://credit.niso.org/\" target="_new"></a>."
