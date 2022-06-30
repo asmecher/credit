@@ -19,6 +19,9 @@ use APP\core\Application;
 use PKP\config\Config;
 use PKP\core\Registry;
 use PKP\facades\Locale;
+use PKP\linkAction\LinkAction;
+use PKP\linkAction\request\AjaxModal;
+use PKP\core\JSONMessage;
 use PKP\plugins\GenericPlugin;
 use PKP\plugins\HookRegistry;
 use PKP\author\maps\Schema;
@@ -79,7 +82,56 @@ class CreditPlugin extends GenericPlugin
     }
 
     /**
-     * Add settings to the payments form
+     * @copydoc Plugin::getActions()
+     */
+    public function getActions($request, $verb)
+    {
+        $router = $request->getRouter();
+        return array_merge(
+            $this->getEnabled() ? [
+                new LinkAction(
+                    'settings',
+                    new AjaxModal(
+                        $router->url($request, null, null, 'manage', null, ['verb' => 'settings', 'plugin' => $this->getName(), 'category' => 'generic']),
+                        $this->getDisplayName()
+                    ),
+                    __('manager.plugins.settings'),
+                    null
+                ),
+            ] : [],
+            parent::getActions($request, $verb)
+        );
+    }
+
+    /**
+     * @copydoc Plugin::manage()
+     */
+    public function manage($args, $request)
+    {
+        switch ($request->getUserVar('verb')) {
+            case 'settings':
+                $context = $request->getContext();
+
+                $this->import('classes.form.CreditSettingsForm');
+                $form = new \CreditSettingsForm($this, $context->getId());
+                $form->initData();
+                return new JSONMessage(true, $form->fetch($request));
+            case 'save':
+                $context = $request->getContext();
+
+                $this->import('classes.form.CreditSettingsForm');
+                $form = new \CreditSettingsForm($this, $context->getId());
+                $form->readInputData();
+                if ($form->validate()) {
+                    $form->execute();
+                    return new JSONMessage(true);
+                }
+        }
+        return parent::manage($args, $request);
+    }
+
+    /**
+     * Add roles to the contributor form
      *
      * @param string $hookName
      * @param FormComponent $form
@@ -115,7 +167,11 @@ class CreditPlugin extends GenericPlugin
         return;
     }
 
-    public function getCreditRoles($locale) {
+    /**
+     * Get the credit roles in an associative URI => Term array.
+     * @param $locale The locale for which to fetch the data (en_US if not available)
+     */
+    public function getCreditRoles($locale): array {
         $roleList = [];
         $doc = new DOMDocument();
         if (!Locale::isLocaleValid($locale)) $locale = 'en_US';

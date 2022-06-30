@@ -22,3 +22,9 @@ msgstr "Contributor Roles"
 
 msgid "plugins.generic.credit.contributorRoles.description"
 msgstr "Please select the contributor's roles according to the <a href=\"https://credit.niso.org/\" target="_new">CASRAI CRediT list</a>."
+
+msgid "plugins.generic.credit.settings.description"
+msgstr "The CRediT vocabulary can interact with OJS in various ways. Use this form to choose which integrations should be used."
+
+msgid "plugins.generic.credit.showCreditRoles"
+msgstr "Show CRediT roles by author names on article landing pages."
