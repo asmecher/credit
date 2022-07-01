@@ -37,6 +37,7 @@ class CreditPlugin extends GenericPlugin
     public function register($category, $path, $mainContextId = null)
     {
         if (parent::register($category, $path, $mainContextId)) {
+            $contextId = ($mainContextId === null) ? $this->getCurrentContextId() : $mainContextId;
             if ($this->getEnabled($mainContextId)) {
                 // Extend the contributor map to include CRediT roles.
                 app('maps')->extend(Schema::class, function($output, Author $item, Schema $map) {
@@ -59,7 +60,9 @@ class CreditPlugin extends GenericPlugin
                     }');
 
                 });
-                HookRegistry::register('TemplateManager::display', [$this, 'handleTemplateDisplay']);
+                if ($this->getSetting($contextId, 'showCreditRoles')) {
+                    HookRegistry::register('TemplateManager::display', [$this, 'handleTemplateDisplay']);
+                }
             }
             return true;
         }

@@ -1,2 +1,10 @@
+ul.userGroup {
+    padding: 0px;
+}
 .userGroup .creditRole {
+    display: inline;
+    padding: 0px;
+}
+.userGroup li.creditRole::after {
+    content: ", ";
 }
