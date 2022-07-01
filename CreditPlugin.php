@@ -59,6 +59,7 @@ class CreditPlugin extends GenericPlugin
                     }');
 
                 });
+                HookRegistry::register('TemplateManager::display', [$this, 'handleTemplateDisplay']);
             }
             return true;
         }
@@ -128,6 +129,75 @@ class CreditPlugin extends GenericPlugin
                 }
         }
         return parent::manage($args, $request);
+    }
+
+    /**
+     * Hook callback: register output filter for article display.
+     *
+     * @param string $hookName
+     * @param array $args
+     *
+     * @return bool
+     *
+     * @see TemplateManager::display()
+     *
+     */
+    public function handleTemplateDisplay($hookName, $args)
+    {
+        $templateMgr = & $args[0];
+        $template = & $args[1];
+        $request = Application::get()->getRequest();
+
+        // Assign our private stylesheet, for front and back ends.
+        $templateMgr->addStyleSheet(
+            'creditPlugin',
+            $request->getBaseUrl() . '/' . $this->getPluginPath() . '/styles.css',
+            [
+                'contexts' => ['frontend']
+            ]
+        );
+
+        switch ($template) {
+            case 'frontend/pages/article.tpl':
+                $templateMgr->registerFilter('output', [$this, 'articleDisplayFilter']);
+                break;
+        }
+        return false;
+    }
+
+    /**
+     * Output filter adds ORCiD interaction to registration form.
+     *
+     * @param string $output
+     * @param TemplateManager $templateMgr
+     *
+     * @return string
+     */
+    public function articleDisplayFilter($output, $templateMgr)
+    {
+        $offset = 0;
+        $authorIndex = 0;
+        $publication = $templateMgr->getTemplateVars('publication');
+        $creditRoles = $this->getCreditRoles(Locale::getLocale());
+        $authors = iterator_to_array($publication->getData('authors'));
+        while (preg_match('/<span class="userGroup">[^<]*<\/span>/', $output, $matches, PREG_OFFSET_CAPTURE, $offset)) {
+            $author = $authors[$authorIndex];
+            $match = $matches[0][0];
+            $offset = $matches[0][1];
+
+            $newOutput = substr($output, 0, $offset);
+            $newOutput .= '<ul class="userGroup">';
+            foreach ($author->getData('creditRoles') ?? [] as $creditRole) {
+                $newOutput .= '<li class="creditRole">' . htmlspecialchars($creditRoles[$creditRole]) . "</li>\n";
+            }
+            $newOutput .= '</ul>';
+            $newOutput .= substr($output, $offset + strlen($match));
+            $output = $newOutput;
+            $templateMgr->unregisterFilter('output', [$this, 'articleDisplayFilter']);
+            $offset++; // Don't match the same string again
+            $authorIndex++;
+        }
+        return $output;
     }
 
     /**
