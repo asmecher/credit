@@ -15,13 +15,13 @@ msgid "plugins.generic.credit.name"
 msgstr "CRediT Plugin"
 
 msgid "plugins.generic.credit.description"
-msgstr "This plugin adds support for the CASRAI CRediT contributor vocabulary."
+msgstr "This plugin adds support for the NISO CRediT contributor vocabulary."
 
 msgid "plugins.generic.credit.contributorRoles"
 msgstr "Contributor Roles"
 
 msgid "plugins.generic.credit.contributorRoles.description"
-msgstr "Please select the contributor's roles according to the <a href=\"https://credit.niso.org/\" target="_new">CASRAI CRediT list</a>."
+msgstr "Please select the contributor's roles according to the <a href=\"https://credit.niso.org/\" target="_new">NISO CRediT list</a>."
 
 msgid "plugins.generic.credit.settings.description"
 msgstr "The CRediT vocabulary can interact with OJS in various ways. Use this form to choose which integrations should be used."

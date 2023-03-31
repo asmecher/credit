@@ -15,10 +15,10 @@ msgid "plugins.generic.credit.name"
 msgstr "Plugin CRediT"
 
 msgid "plugins.generic.credit.description"
-msgstr "El plugin brinda soporte para el uso del vocabulario de contribución de CASRAI CRediT."
+msgstr "El plugin brinda soporte para el uso del vocabulario de contribución de NISO CRediT."
 
 msgid "plugins.generic.credit.contributorRoles"
 msgstr "Roles de Autoría"
 
 msgid "plugins.generic.credit.contributorRoles.description"
-msgstr "Por favor seleccione el rol de autoría según la lista de CASRAI CRediT <a href=\"https://credit.niso.org/\" target="_new"></a>."
+msgstr "Por favor seleccione el rol de autoría según la lista de NISO CRediT <a href=\"https://credit.niso.org/\" target="_new"></a>."

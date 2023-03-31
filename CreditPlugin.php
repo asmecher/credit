@@ -8,7 +8,7 @@
  * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @class CreditPlugin
- * @brief Support for the CASRAI CRediT contributor credit vocabulary.
+ * @brief Support for the NISO CRediT contributor credit vocabulary.
  */
 
 namespace APP\plugins\generic\credit;
