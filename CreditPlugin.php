@@ -17,13 +17,14 @@ use \DOMDocument;
 
 use APP\core\Application;
 use PKP\config\Config;
+use PKP\components\forms\publication\ContributorForm;
 use PKP\core\Registry;
 use PKP\facades\Locale;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
 use PKP\core\JSONMessage;
 use PKP\plugins\GenericPlugin;
-use PKP\plugins\HookRegistry;
+use PKP\plugins\Hook;
 use PKP\author\maps\Schema;
 use APP\author\Author;
 
@@ -46,8 +47,8 @@ class CreditPlugin extends GenericPlugin
                     return $output;
                 });
 
-                HookRegistry::register('Form::config::before', [$this, 'addCreditRoles']);
-                HookRegistry::register('Schema::get::author', function ($hookName, $args) {
+                Hook::add('Form::config::before', [$this, 'addCreditRoles']);
+                Hook::add('Schema::get::author', function ($hookName, $args) {
                     $schema = $args[0];
                     $schema->properties->creditRoles = json_decode('{
 			"type": "array",
@@ -61,7 +62,7 @@ class CreditPlugin extends GenericPlugin
 
                 });
                 if ($this->getSetting($contextId, 'showCreditRoles')) {
-                    HookRegistry::register('TemplateManager::display', [$this, 'handleTemplateDisplay']);
+                    Hook::add('TemplateManager::display', [$this, 'handleTemplateDisplay']);
                 }
             }
             return true;
@@ -211,10 +212,8 @@ class CreditPlugin extends GenericPlugin
      */
     public function addCreditRoles($hookName, $form)
     {
-        import('lib.pkp.classes.components.forms.publication.PKPContributorForm');
-        if ($form->id !== FORM_CONTRIBUTOR) {
-            return;
-        }
+
+        if (!$form instanceof ContributorForm) return Hook::CONTINUE;
 
         $context = Application::get()->getRequest()->getContext();
         if (!$context) {
