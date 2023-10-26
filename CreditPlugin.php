@@ -183,7 +183,7 @@ class CreditPlugin extends GenericPlugin
         $authorIndex = 0;
         $publication = $templateMgr->getTemplateVars('publication');
         $creditRoles = $this->getCreditRoles(Locale::getLocale());
-        $authors = iterator_to_array($publication->getData('authors'));
+        $authors = array_values(iterator_to_array($publication->getData('authors')));
         while (preg_match('/<span class="userGroup">[^<]*<\/span>/', $output, $matches, PREG_OFFSET_CAPTURE, $offset)) {
             $author = $authors[$authorIndex];
             $match = $matches[0][0];
