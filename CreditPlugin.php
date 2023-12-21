@@ -28,6 +28,8 @@ use PKP\plugins\Hook;
 use PKP\author\maps\Schema;
 use APP\author\Author;
 
+use APP\plugins\generic\credit\classes\form\CreditSettingsForm;
+
 class CreditPlugin extends GenericPlugin
 {
     /**
@@ -117,15 +119,13 @@ class CreditPlugin extends GenericPlugin
             case 'settings':
                 $context = $request->getContext();
 
-                $this->import('classes.form.CreditSettingsForm');
-                $form = new \CreditSettingsForm($this, $context->getId());
+                $form = new CreditSettingsForm($this, $context->getId());
                 $form->initData();
                 return new JSONMessage(true, $form->fetch($request));
             case 'save':
                 $context = $request->getContext();
 
-                $this->import('classes.form.CreditSettingsForm');
-                $form = new \CreditSettingsForm($this, $context->getId());
+                $form = new CreditSettingsForm($this, $context->getId());
                 $form->readInputData();
                 if ($form->validate()) {
                     $form->execute();
