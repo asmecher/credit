@@ -260,3 +260,7 @@ class CreditPlugin extends GenericPlugin
         return $roleList;
     }
 }
+
+if (!PKP_STRICT_MODE) {
+    class_alias('\APP\plugins\generic\credit\CreditPlugin', '\CreditPlugin');
+}
