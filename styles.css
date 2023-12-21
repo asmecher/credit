@@ -5,6 +5,6 @@ ul.userGroup {
     display: inline;
     padding: 0px;
 }
-.userGroup li.creditRole::after {
+.userGroup li.creditRole:not(:last-child):after {
     content: ", ";
 }
