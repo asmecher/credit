@@ -246,7 +246,7 @@ class CreditPlugin extends GenericPlugin
     public function getCreditRoles($locale): array {
         $roleList = [];
         $doc = new DOMDocument();
-        if (!Locale::isLocaleValid($locale)) $locale = 'en_US';
+        if (!Locale::isLocaleValid($locale)) $locale = 'en';
         if (file_exists($filename = dirname(__FILE__) . '/translations/credit-roles-' . $locale . '.xml')) {
             $doc->load($filename);
         } else {

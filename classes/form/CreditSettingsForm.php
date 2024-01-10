@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file classes/form/CreditSettingsForm.inc.php
+ * @file classes/form/CreditSettingsForm.php
  *
  * Copyright (c) 2014-2022 Simon Fraser University
  * Copyright (c) 2003-2022 John Willinsky
@@ -10,6 +10,8 @@
  * @class CreditSettingsForm
  * @brief Form for journal managers to setup the CRediT plugin.
  */
+
+namespace APP\plugins\generic\credit\classes\form;
 
 use PKP\form\Form;
 use PKP\form\validation\FormValidator;
