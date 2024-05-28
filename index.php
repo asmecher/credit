@@ -11,4 +11,5 @@
  *
  */
 
-return new \APP\plugins\generic\credit\CreditPlugin();
+require_once('CreditPlugin.inc.php');
+return new CreditPlugin();

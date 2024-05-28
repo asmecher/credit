@@ -15,7 +15,7 @@
 	{rdelim});
 </script>
 
-<form class="pkp_form" id="creditSettingsForm" method="post" action="{url router=\PKP\core\PKPApplication::ROUTE_COMPONENT op="manage" plugin="creditplugin" category="generic" verb="save"}">
+<form class="pkp_form" id="creditSettingsForm" method="post" action="{url router=ROUTE_COMPONENT op="manage" plugin="creditplugin" category="generic" verb="save"}">
 	{csrf}
 	{fbvFormArea id="creditSettingsFormArea"}
 		<p class="pkp_help">{translate key="plugins.generic.credit.settings.description"}</p>

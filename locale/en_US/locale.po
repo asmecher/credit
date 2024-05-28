@@ -28,3 +28,6 @@ msgstr "The CRediT vocabulary can interact with OJS in various ways. Use this fo
 
 msgid "plugins.generic.credit.showCreditRoles"
 msgstr "Show CRediT roles by author names on article landing pages."
+
+msgid "plugins.generic.credit.invalidCreditRole"
+msgstr "You have entered an invalid CRediT role. Please double-check the list of CRediT roles."

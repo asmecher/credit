@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file CreditPlugin.php
+ * @file CreditPlugin.inc.php
  *
  * Copyright (c) 2022 Simon Fraser University
  * Copyright (c) 2022 John Willinsky
@@ -10,25 +10,6 @@
  * @class CreditPlugin
  * @brief Support for the NISO CRediT contributor credit vocabulary.
  */
-
-namespace APP\plugins\generic\credit;
-
-use \DOMDocument;
-
-use APP\core\Application;
-use PKP\config\Config;
-use PKP\components\forms\publication\ContributorForm;
-use PKP\core\Registry;
-use PKP\facades\Locale;
-use PKP\linkAction\LinkAction;
-use PKP\linkAction\request\AjaxModal;
-use PKP\core\JSONMessage;
-use PKP\plugins\GenericPlugin;
-use PKP\plugins\Hook;
-use PKP\author\maps\Schema;
-use APP\author\Author;
-
-use APP\plugins\generic\credit\classes\form\CreditSettingsForm;
 
 class CreditPlugin extends GenericPlugin
 {
@@ -42,29 +23,14 @@ class CreditPlugin extends GenericPlugin
         if (parent::register($category, $path, $mainContextId)) {
             $contextId = ($mainContextId === null) ? $this->getCurrentContextId() : $mainContextId;
             if ($this->getEnabled($mainContextId)) {
-                // Extend the contributor map to include CRediT roles.
-                app('maps')->extend(Schema::class, function($output, Author $item, Schema $map) {
-                    // Ensure that an empty list is passed from the API as [] rather than null.
-                    $output['creditRoles'] = $output['creditRoles'] ?? [];
-                    return $output;
-                });
+                HookRegistry::register('authorform::initdata', [$this, 'initAuthorForm']);
+                HookRegistry::register('authorform::display', [$this, 'displayAuthorForm']);
+                HookRegistry::register('authorform::validate', [$this, 'validateAuthorForm']);
+                HookRegistry::register('authorform::execute', [$this, 'executeAuthorForm']);
+                HookRegistry::register('Schema::get::author', [$this, 'extendAuthorSchema']);
 
-                Hook::add('Form::config::before', [$this, 'addCreditRoles']);
-                Hook::add('Schema::get::author', function ($hookName, $args) {
-                    $schema = $args[0];
-                    $schema->properties->creditRoles = json_decode('{
-			"type": "array",
-			"validation": [
-				"nullable"
-			],
-			"items": {
-				"type": "string"
-                        }
-                    }');
-
-                });
                 if ($this->getSetting($contextId, 'showCreditRoles')) {
-                    Hook::add('TemplateManager::display', [$this, 'handleTemplateDisplay']);
+                    HookRegistry::register('TemplateManager::display', [$this, 'handleTemplateDisplay']);
                 }
             }
             return true;
@@ -115,6 +81,7 @@ class CreditPlugin extends GenericPlugin
      */
     public function manage($args, $request)
     {
+        $this->import('classes.form.CreditSettingsForm');
         switch ($request->getUserVar('verb')) {
             case 'settings':
                 $context = $request->getContext();
@@ -133,6 +100,81 @@ class CreditPlugin extends GenericPlugin
                 }
         }
         return parent::manage($args, $request);
+    }
+
+    /**
+     * Initialize the author edit form.
+     */
+    function initAuthorForm($hookName, $params) {
+        $form =& $params[0];
+        if ($author = $form->getAuthor()) {
+            $form->setData('creditRoles', (array) $author->getData('creditRoles'));
+        } else {
+            $form->setData('creditRoles', []);
+        }
+        return false;
+    }
+
+    /**
+     * Display the author edit form.
+     */
+    function displayAuthorForm($hookName, $params) {
+        HookRegistry::register('Common::UserDetails::AdditionalItems', [$this, 'addCreditRoles']);
+        $form =& $params[0];
+
+        // Build a list of roles for selection in the UI.
+        $roleList = [];
+        foreach ($this->getCreditRoles(AppLocale::getLocale()) as $uri => $name) {
+            $roleList[] = ['value' => $uri, 'label' => $name];
+        }
+
+        $templateMgr = TemplateManager::getManager(Application::get()->getRequest());
+        $templateMgr->assign('roleList', $roleList);
+
+        return false;
+    }
+
+    /**
+     * Validate the author edit form.
+     */
+    function validateAuthorForm($hookName, $params) {
+        $form =& $params[0];
+        $form->readUserVars(['creditRoles']);
+        $creditRoles = (array) $form->getData('creditRoles');
+        $roleUris = array_keys($this->getCreditRoles(AppLocale::getLocale()));
+        foreach ($creditRoles as $roleUri) {
+            if (!in_array($roleUri, $roleUris)) $form->addError('creditRoles', __('plugins.generic.credit.invalidCreditRole'));
+        }
+        return false;
+    }
+
+    /**
+     * Execute the author edit form.
+     */
+    function executeAuthorForm($hookName, $params) {
+        $form =& $params[0];
+        $form->getAuthor()->setData('creditRoles', (array) $form->getData('creditRoles'));
+        return false;
+    }
+
+    /**
+     * Add additional CRediT specific field to the Author object
+     *
+     * @param $hookName string
+     * @param $args array
+     *
+     * @return bool
+     */
+    function extendAuthorSchema($hookName, $args) {
+        $schema = $args[0];
+        $schema->properties->creditRoles = (object)[
+            'type' => 'array',
+            'validation' => ['nullable'],
+            'items' => (object) [
+                'type' => 'string',
+            ],
+        ];
+        return false;
     }
 
     /**
@@ -179,27 +221,26 @@ class CreditPlugin extends GenericPlugin
      */
     public function articleDisplayFilter($output, $templateMgr)
     {
-        $offset = 0;
         $authorIndex = 0;
         $publication = $templateMgr->getTemplateVars('publication');
-        $creditRoles = $this->getCreditRoles(Locale::getLocale());
+        $creditRoles = $this->getCreditRoles(AppLocale::getLocale());
         $authors = array_values(iterator_to_array($publication->getData('authors')));
-        while (preg_match('/<span class="userGroup">[^<]*<\/span>/', $output, $matches, PREG_OFFSET_CAPTURE, $offset)) {
-            $author = $authors[$authorIndex];
-            $match = $matches[0][0];
-            $offset = $matches[0][1];
 
-            $newOutput = substr($output, 0, $offset);
-            $newOutput .= '<ul class="userGroup">';
-            foreach ($author->getData('creditRoles') ?? [] as $creditRole) {
-                $newOutput .= '<li class="creditRole">' . htmlspecialchars($creditRoles[$creditRole]) . "</li>\n";
+        $offset = strpos($output, '<ul class="authors">');
+        if (!$offset) return false;
+
+        $endOffset = strpos($output, '</ul>', $offset);
+        if (!$endOffset) return false;
+
+        while (($offset = strpos($output, '</li>', $offset)) && $offset < $endOffset) {
+            $newOutput = '<ul class="userGroup">';
+            foreach ((array) $authors[$authorIndex++]->getData('creditRoles') as $roleUri) {
+                $newOutput .= '<li class="creditRole">' . htmlspecialchars($creditRoles[$roleUri]) . "</li>\n";
             }
             $newOutput .= '</ul>';
-            $newOutput .= substr($output, $offset + strlen($match));
-            $output = $newOutput;
-            $templateMgr->unregisterFilter('output', [$this, 'articleDisplayFilter']);
-            $offset++; // Don't match the same string again
-            $authorIndex++;
+            $output = substr($output, 0, $offset) . $newOutput . substr($output, $offset);
+            $offset += strlen($newOutput) + 1; // Do not match same tag
+            $endOffset += strlen($newOutput);
         }
         return $output;
     }
@@ -208,45 +249,25 @@ class CreditPlugin extends GenericPlugin
      * Add roles to the contributor form
      *
      * @param string $hookName
-     * @param FormComponent $form
+     * @param array $params
      */
-    public function addCreditRoles($hookName, $form)
+    public function addCreditRoles($hookName, $params)
     {
+        $smarty = $params[1];
+        $output =& $params[2];
+        $output .= $smarty->fetch($this->getTemplateResource('creditField.tpl'));
 
-        if (!$form instanceof ContributorForm) return Hook::CONTINUE;
-
-        $context = Application::get()->getRequest()->getContext();
-        if (!$context) {
-            return;
-        }
-
-        // Build a list of roles for selection in the UI.
-        $roleList = [];
-        foreach ($this->getCreditRoles(Locale::getLocale()) as $uri => $name) {
-            $roleList[] = ['value' => $uri, 'label' => $name];
-        }
-
-        $author = $form->_author ?? null;
-
-        $form->addField(new \PKP\components\forms\FieldOptions('creditRoles', [
-            'type' => 'checkbox',
-            'label' => __('plugins.generic.credit.contributorRoles'),
-            'description' => __('plugins.generic.credit.contributorRoles.description'),
-            'options' => $roleList,
-            'value' => $author?->getData('creditRoles') ?? [],
-        ]));
-
-        return;
+        return false;
     }
 
     /**
      * Get the credit roles in an associative URI => Term array.
      * @param $locale The locale for which to fetch the data (en_US if not available)
      */
-    public function getCreditRoles($locale): array {
+    public function getCreditRoles($locale) {
         $roleList = [];
         $doc = new DOMDocument();
-        if (!Locale::isLocaleValid($locale)) $locale = 'en';
+        if (!AppLocale::isLocaleValid($locale)) $locale = 'en_US';
         if (file_exists($filename = dirname(__FILE__) . '/translations/credit-roles-' . $locale . '.xml')) {
             $doc->load($filename);
         } else {
@@ -259,8 +280,4 @@ class CreditPlugin extends GenericPlugin
         }
         return $roleList;
     }
-}
-
-if (!PKP_STRICT_MODE) {
-    class_alias('\APP\plugins\generic\credit\CreditPlugin', '\CreditPlugin');
 }
