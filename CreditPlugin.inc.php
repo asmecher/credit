@@ -212,7 +212,7 @@ class CreditPlugin extends GenericPlugin
     }
 
     /**
-     * Output filter adds ORCiD interaction to registration form.
+     * Output filter adds CRediT information to article view.
      *
      * @param string $output
      * @param TemplateManager $templateMgr
@@ -227,10 +227,10 @@ class CreditPlugin extends GenericPlugin
         $authors = array_values(iterator_to_array($publication->getData('authors')));
 
         $offset = strpos($output, '<ul class="authors">');
-        if (!$offset) return false;
+        if (!$offset) return $output;
 
         $endOffset = strpos($output, '</ul>', $offset);
-        if (!$endOffset) return false;
+        if (!$endOffset) return $output;
 
         while (($offset = strpos($output, '</li>', $offset)) && $offset < $endOffset) {
             $newOutput = '<ul class="userGroup">';
