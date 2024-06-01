@@ -226,23 +226,31 @@ class CreditPlugin extends GenericPlugin
         $creditRoles = $this->getCreditRoles(AppLocale::getLocale());
         $authors = array_values(iterator_to_array($publication->getData('authors')));
 
-        $offset = strpos($output, '<ul class="authors">');
-        if (!$offset) return $output;
-
-        $endOffset = strpos($output, '</ul>', $offset);
-        if (!$endOffset) return $output;
-
-        while (($offset = strpos($output, '</li>', $offset)) && $offset < $endOffset) {
-            $newOutput = '<ul class="userGroup">';
-            foreach ((array) $authors[$authorIndex++]->getData('creditRoles') as $roleUri) {
-                $newOutput .= '<li class="creditRole">' . htmlspecialchars($creditRoles[$roleUri]) . "</li>\n";
-            }
-            $newOutput .= '</ul>';
-            $output = substr($output, 0, $offset) . $newOutput . substr($output, $offset);
-            $offset += strlen($newOutput) + 1; // Do not match same tag
-            $endOffset += strlen($newOutput);
-        }
-        return $output;
+        // Identify the ul.authors list and traverse li/ul/ol elements from there.
+        // For any </li> elements in 1st-level depth, append CRediT information before </li>.
+        $startMarkup = '<ul class="authors">';
+        $startOffset = strpos($output, $startMarkup);
+        if ($startOffset === false) return $output;
+        $startOffset += strlen($startMarkup);
+        $depth = 1; // Depth of potentially nested ul/ol list elements
+        return substr($output, 0, $startOffset) . preg_replace_callback(
+            '/(<\/li>)|(<[uo]l[^>]*>)|(<\/[uo]l>)/i',
+            function($matches) use (&$depth, &$authorIndex, $authors, $creditRoles) {
+                switch (true) {
+                    case $depth == 1 && $matches[1] !== '': // </li> in first level depth
+                        $newOutput = '<ul class="userGroup">';
+                        foreach ((array) $authors[$authorIndex++]->getData('creditRoles') as $roleUri) {
+                            $newOutput .= '<li class="creditRole">' . htmlspecialchars($creditRoles[$roleUri]) . "</li>\n";
+                        }
+                        $newOutput .= '</ul>';
+                        return $newOutput . $matches[0];
+                    case !empty($matches[2]) && $depth >= 1: $depth++; break; // <ul>; do not re-enter once we leave
+                    case !empty($matches[3]): $depth--; break; // </ul>
+                }
+                return $matches[0];
+            },
+            substr($output, $startOffset)
+        );
     }
 
     /**
