@@ -170,7 +170,7 @@ class CreditPlugin extends GenericPlugin
     }
 
     /**
-     * Output filter adds ORCiD interaction to registration form.
+     * Output filter adds CRediT information to article view.
      *
      * @param string $output
      * @param TemplateManager $templateMgr
@@ -179,29 +179,36 @@ class CreditPlugin extends GenericPlugin
      */
     public function articleDisplayFilter($output, $templateMgr)
     {
-        $offset = 0;
         $authorIndex = 0;
         $publication = $templateMgr->getTemplateVars('publication');
         $creditRoles = $this->getCreditRoles(Locale::getLocale());
         $authors = array_values(iterator_to_array($publication->getData('authors')));
-        while (preg_match('/<span class="userGroup">[^<]*<\/span>/', $output, $matches, PREG_OFFSET_CAPTURE, $offset)) {
-            $author = $authors[$authorIndex];
-            $match = $matches[0][0];
-            $offset = $matches[0][1];
 
-            $newOutput = substr($output, 0, $offset);
-            $newOutput .= '<ul class="userGroup">';
-            foreach ($author->getData('creditRoles') ?? [] as $creditRole) {
-                $newOutput .= '<li class="creditRole">' . htmlspecialchars($creditRoles[$creditRole]) . "</li>\n";
-            }
-            $newOutput .= '</ul>';
-            $newOutput .= substr($output, $offset + strlen($match));
-            $output = $newOutput;
-            $templateMgr->unregisterFilter('output', [$this, 'articleDisplayFilter']);
-            $offset++; // Don't match the same string again
-            $authorIndex++;
-        }
-        return $output;
+        // Identify the ul.authors list and traverse li/ul/ol elements from there.
+        // For any </li> elements in 1st-level depth, append CRediT information before </li>.
+        $startMarkup = '<ul class="authors">';
+        $startOffset = strpos($output, $startMarkup);
+        if ($startOffset === false) return $output;
+        $startOffset += strlen($startMarkup);
+        $depth = 1; // Depth of potentially nested ul/ol list elements
+        return substr($output, 0, $startOffset) . preg_replace_callback(
+            '/(<\/li>)|(<[uo]l[^>]*>)|(<\/[uo]l>)/i',
+            function($matches) use (&$depth, &$authorIndex, $authors, $creditRoles) {
+                switch (true) {
+                    case $depth == 1 && $matches[1] !== '': // </li> in first level depth
+                        $newOutput = '<ul class="userGroup">';
+                        foreach ((array) $authors[$authorIndex++]->getData('creditRoles') as $roleUri) {
+                            $newOutput .= '<li class="creditRole">' . htmlspecialchars($creditRoles[$roleUri]) . "</li>\n";
+                        }
+                        $newOutput .= '</ul>';
+                        return $newOutput . $matches[0];
+                    case !empty($matches[2]) && $depth >= 1: $depth++; break; // <ul>; do not re-enter once we leave
+                    case !empty($matches[3]): $depth--; break; // </ul>
+                }
+                return $matches[0];
+            },
+            substr($output, $startOffset)
+        );
     }
 
     /**
