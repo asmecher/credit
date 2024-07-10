@@ -1,6 +1,8 @@
 ul.userGroup {
     padding: 0px;
+    margin: 0px;
 }
+
 .userGroup .creditRole {
     display: inline;
     padding: 0px;
