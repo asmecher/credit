@@ -183,7 +183,6 @@ class CreditPlugin extends GenericPlugin
         $publication = $templateMgr->getTemplateVars('publication');
         $creditRoles = $this->getCreditRoles(Locale::getLocale());
         $authors = array_values(iterator_to_array($publication->getData('authors')));
-
         // Identify the ul.authors list and traverse li/ul/ol elements from there.
         // For any </li> elements in 1st-level depth, append CRediT information before </li>.
         $startMarkup = '<ul class="authors">';
@@ -198,7 +197,8 @@ class CreditPlugin extends GenericPlugin
                     case $depth == 1 && $matches[1] !== '': // </li> in first level depth
                         $newOutput = '<ul class="userGroup">';
                         foreach ((array) $authors[$authorIndex++]->getData('creditRoles') as $roleUri) {
-                            $newOutput .= '<li class="creditRole">' . htmlspecialchars($creditRoles[$roleUri]) . "</li>\n";
+                            $roleUri = str_replace('http://', 'https://', $roleUri); // Initial release of CRediT used http:// URIs
+                            $newOutput .= '<li class="creditRole" data-role="' . $roleUri . '">' . htmlspecialchars($creditRoles[$roleUri]['name'] ?? $roleUri) . "</li>\n";
                         }
                         $newOutput .= '</ul>';
                         return $newOutput . $matches[0];
@@ -229,8 +229,8 @@ class CreditPlugin extends GenericPlugin
 
         // Build a list of roles for selection in the UI.
         $roleList = [];
-        foreach ($this->getCreditRoles(Locale::getLocale()) as $uri => $name) {
-            $roleList[] = ['value' => $uri, 'label' => $name];
+        foreach ($this->getCreditRoles(Locale::getLocale()) as $uri => $data) {
+            $roleList[] = ['value' => $uri, 'label' => $data['name']];
         }
 
         $author = $form->_author ?? null;
@@ -243,7 +243,7 @@ class CreditPlugin extends GenericPlugin
             'value' => $author?->getData('creditRoles') ?? [],
         ]));
 
-        return;
+        return Hook::CONTINUE;
     }
 
     /**
@@ -251,20 +251,16 @@ class CreditPlugin extends GenericPlugin
      * @param $locale The locale for which to fetch the data (en_US if not available)
      */
     public function getCreditRoles($locale): array {
-        $roleList = [];
         $doc = new DOMDocument();
         if (!Locale::isLocaleValid($locale)) $locale = 'en';
-        if (file_exists($filename = dirname(__FILE__) . '/translations/credit-roles-' . $locale . '.xml')) {
-            $doc->load($filename);
-        } else {
-            $doc->load(dirname(__FILE__) . '/jats-schematrons/schematrons/1.0/credit-roles.xml');
+        foreach ([$locale, 'en'] as $locale) {
+            $path = dirname(__FILE__) . "/credit-translation/translations/{$locale}.json";
+            if (!file_exists($path)) continue;
+
+            $json = json_decode(file_get_contents($path), true);
+            return $json['translations'];
         }
-        foreach ($doc->getElementsByTagName('credit-roles') as $roles) {
-            foreach ($roles->getElementsByTagName('item') as $item) {
-                $roleList[$item->getAttribute('uri')] = $item->getAttribute('term');
-            }
-        }
-        return $roleList;
+        throw new \Exception('Unable to load JSON CRediT role list!');
     }
 }
 
