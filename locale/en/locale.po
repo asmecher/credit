@@ -18,7 +18,7 @@ msgid "plugins.generic.credit.description"
 msgstr "This plugin adds support for the NISO CRediT contributor vocabulary."
 
 msgid "plugins.generic.credit.contributorRoles"
-msgstr "Contributor Roles"
+msgstr "CRediT Roles"
 
 msgid "plugins.generic.credit.contributorRoles.description"
 msgstr "Please select the contributor's roles according to the <a href=\"https://credit.niso.org/\" target="_new">NISO CRediT list</a>."
