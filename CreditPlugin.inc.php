@@ -60,6 +60,7 @@ class CreditPlugin extends GenericPlugin
     public function getActions($request, $verb)
     {
         $router = $request->getRouter();
+        import('lib.pkp.classes.linkAction.request.AjaxModal');
         return array_merge(
             $this->getEnabled() ? [
                 new LinkAction(

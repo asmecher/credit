@@ -1,3 +1,6 @@
 [submodule "jats-schematrons"]
 	path = jats-schematrons
 	url = https://github.com/JATS4R/jats-schematrons
+[submodule "credit-translation"]
+	path = credit-translation
+	url = https://github.com/contributorshipcollaboration/credit-translation
