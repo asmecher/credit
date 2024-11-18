@@ -1,0 +1,36 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-11-17 06:40+0000\n"
+"Last-Translator: Mirko Spiroski <mspiroski@id-press.eu>\n"
+"Language-Team: Macedonian <http://translate.pkp.sfu.ca/projects/plugins/"
+"credit/mk/>\n"
+"Language: mk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n==1 || n%10==1 ? 0 : 1;\n"
+"X-Generator: Weblate 4.18.2\n"
+
+msgid "plugins.generic.credit.name"
+msgstr "Приклучок CRediT"
+
+msgid "plugins.generic.credit.description"
+msgstr ""
+"Овој приклучок додава поддршка за вокабуларот за соработници на NISO CRediT."
+
+msgid "plugins.generic.credit.contributorRoles"
+msgstr "Улоги на соработници"
+
+msgid "plugins.generic.credit.contributorRoles.description"
+msgstr ""
+"Изберете ги улогите на соработниците според <a href=\"https://credit.niso."
+"org/\" target=\"_new\">Списокот на NISO CRediT</a>."
+
+msgid "plugins.generic.credit.settings.description"
+msgstr ""
+"Вокабуларот CRediT може да комуницира со OJS на различни начини. Користете "
+"ја оваа форма за да изберете кои интеграции треба да се користат."
+
+msgid "plugins.generic.credit.showCreditRoles"
+msgstr ""
+"Прикажи CRediT улоги по имиња на автори на целните страници на написите."

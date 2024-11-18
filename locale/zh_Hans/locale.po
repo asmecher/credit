@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-07-12 07:40+0000\n"
+"Last-Translator: Keren Yu <contact@kerenyu.com>\n"
+"Language-Team: Chinese (Simplified) <http://translate.pkp.sfu.ca/projects/"
+"plugins/credit/zh_Hans/>\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.18.2\n"
+
+msgid "plugins.generic.credit.name"
+msgstr "CRediT插件"
+
+msgid "plugins.generic.credit.description"
+msgstr "此插件增加了对NISO CRediT贡献者分类的支援。"
+
+msgid "plugins.generic.credit.contributorRoles"
+msgstr "贡献者角色"
+
+msgid "plugins.generic.credit.contributorRoles.description"
+msgstr ""
+"请依据NISO拟定之<a href=\"https://credit.niso.org/\" target=\"_new\""
+">“贡献者角色分类表”</a>选择贡献者类别。"
+
+msgid "plugins.generic.credit.settings.description"
+msgstr "CRediT语汇以多种方式与开放期刊系统互动。请使用此表单选择二者间的整合方式。"
+
+msgid "plugins.generic.credit.showCreditRoles"
+msgstr "在论文登陆页的作者名称旁显示其CRediT角色。"

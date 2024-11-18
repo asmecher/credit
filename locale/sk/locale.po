@@ -1,0 +1,35 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-08-22 14:40+0000\n"
+"Last-Translator: Nina Trubanova <nina.trubanova@ucdconnect.ie>\n"
+"Language-Team: Slovak <http://translate.pkp.sfu.ca/projects/plugins/credit/"
+"sk/>\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 4.18.2\n"
+
+msgid "plugins.generic.credit.name"
+msgstr "CRediT plugin"
+
+msgid "plugins.generic.credit.description"
+msgstr "Tento plugin poskytuje podporu pre slovník prispievateľov NISO CRediTu."
+
+msgid "plugins.generic.credit.contributorRoles"
+msgstr "Roly prispievateľov"
+
+msgid "plugins.generic.credit.contributorRoles.description"
+msgstr ""
+"Vyberte roly prispievateľa podľa <a href=\"https://credit.niso.org/\" target="
+"\"_new\">zoznamu NISO CRediT</a>."
+
+msgid "plugins.generic.credit.settings.description"
+msgstr ""
+"Slovník CRediT môže spolupracovať s OJS rôznymi spôsobmi. Pomocou tohto "
+"formulára vyberte, ktoré integrácie sa majú použiť."
+
+msgid "plugins.generic.credit.showCreditRoles"
+msgstr ""
+"Zobrazenie rolí CRediTu podľa mien autorov na cieľových stránkach článkov."

@@ -1,0 +1,35 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-10-11 20:33+0000\n"
+"Last-Translator: Cyril Kamburov <cc@intermedia.bg>\n"
+"Language-Team: Bulgarian <http://translate.pkp.sfu.ca/projects/plugins/"
+"credit/bg/>\n"
+"Language: bg\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.18.2\n"
+
+msgid "plugins.generic.credit.contributorRoles"
+msgstr "Роли на сътрудници"
+
+msgid "plugins.generic.credit.settings.description"
+msgstr ""
+"Речникът на CRediT може да взаимодейства с OJS по различни начини. "
+"Използвайте този формуляр, за да изберете кои интеграции да се използват."
+
+msgid "plugins.generic.credit.showCreditRoles"
+msgstr ""
+"Показване на CRediT роли по имена на автори на целевите страници на статии."
+
+msgid "plugins.generic.credit.name"
+msgstr "CRediT плъгин"
+
+msgid "plugins.generic.credit.description"
+msgstr "Този плъгин добавя поддръжка за речника на сътрудниците на NISO CrediT."
+
+msgid "plugins.generic.credit.contributorRoles.description"
+msgstr ""
+"Моля, изберете ролите на сътрудника според <a href=\"https://credit.niso.org/"
+"\" target=\"_new\">списъка на NISO CrediT</a>."
