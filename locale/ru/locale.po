@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-06-16 01:39+0000\n"
+"PO-Revision-Date: 2024-12-02 04:41+0000\n"
 "Last-Translator: Pavel Pisklakov <ppv1979@mail.ru>\n"
 "Language-Team: Russian <http://translate.pkp.sfu.ca/projects/plugins/credit/"
 "ru/>\n"
@@ -19,7 +19,7 @@ msgid "plugins.generic.credit.description"
 msgstr "Добавляет поддержку словаря авторов NISO CRediT."
 
 msgid "plugins.generic.credit.contributorRoles"
-msgstr "Роли авторов"
+msgstr "Роли CRediT"
 
 msgid "plugins.generic.credit.contributorRoles.description"
 msgstr ""
