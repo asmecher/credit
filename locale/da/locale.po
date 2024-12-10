@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-30 16:24+0000\n"
+"PO-Revision-Date: 2024-11-21 07:14+0000\n"
 "Last-Translator: Alexandra Fogtmann-Schulz <alfo@kb.dk>\n"
 "Language-Team: Danish <http://translate.pkp.sfu.ca/projects/plugins/credit/"
 "da/>\n"
@@ -15,7 +15,7 @@ msgid "plugins.generic.credit.name"
 msgstr "CRediT Plugin"
 
 msgid "plugins.generic.credit.contributorRoles"
-msgstr "Roller for bidragydere"
+msgstr "CRediT Roller"
 
 msgid "plugins.generic.credit.contributorRoles.description"
 msgstr ""

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-04-15 19:52+0000\n"
+"PO-Revision-Date: 2024-11-26 07:05+0000\n"
 "Last-Translator: Primož Svetek <primoz.svetek@gmail.com>\n"
 "Language-Team: Slovenian <http://translate.pkp.sfu.ca/projects/plugins/"
 "credit/sl/>\n"
@@ -19,7 +19,7 @@ msgid "plugins.generic.credit.description"
 msgstr "Vtičnik doda podporo za NISO CRediT besedišče."
 
 msgid "plugins.generic.credit.contributorRoles"
-msgstr "Vloge sodelavcev"
+msgstr "CRediT vloge"
 
 msgid "plugins.generic.credit.contributorRoles.description"
 msgstr ""
