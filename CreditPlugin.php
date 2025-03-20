@@ -27,6 +27,7 @@ use PKP\plugins\GenericPlugin;
 use PKP\plugins\Hook;
 use PKP\author\maps\Schema;
 use APP\author\Author;
+use PKP\oai\OAIRecord;
 
 use APP\plugins\generic\credit\classes\form\CreditSettingsForm;
 
@@ -53,12 +54,12 @@ class CreditPlugin extends GenericPlugin
                 Hook::add('Schema::get::author', function ($hookName, $args) {
                     $schema = $args[0];
                     $schema->properties->creditRoles = json_decode('{
-			"type": "array",
-			"validation": [
-				"nullable"
-			],
-			"items": {
-				"type": "string"
+                        "type": "array",
+                        "validation": [
+                                "nullable"
+                        ],
+                        "items": {
+                                "type": "string"
                         }
                     }');
 
@@ -66,6 +67,7 @@ class CreditPlugin extends GenericPlugin
                 if ($this->getSetting($contextId, 'showCreditRoles')) {
                     Hook::add('TemplateManager::display', [$this, 'handleTemplateDisplay']);
                 }
+                Hook::add('JatsTemplatePlugin::jats', $this->augmentJats(...));
             }
             return true;
         }
@@ -261,6 +263,33 @@ class CreditPlugin extends GenericPlugin
             return $json['translations'];
         }
         throw new \Exception('Unable to load JSON CRediT role list!');
+    }
+
+    /**
+     * Add the CRediT role information to the JATS contributor list
+     */
+    public function augmentJats($hookName, OAIRecord $record, \DOMDocument $doc) {
+        $submission = $record->getData('article');
+        $publication = $submission->getCurrentPublication();
+        $roleVocabulary = $this->getCreditRoles($submission->getData('locale'));
+        $xpath = new \DOMXPath($doc);
+	$authorsArray = array_values($publication->getData('authors')->toArray());
+        foreach ($xpath->query('//article/front/article-meta/contrib-group/contrib') as $matchIndex => $contribNode) {
+            $match = $xpath->query('//email', $contribNode);
+            if (!$match->length) continue;
+	    $author = $authorsArray[$matchIndex];
+            $creditRoles = $author->getData('creditRoles');
+            if (!$creditRoles) continue;
+
+            foreach ($creditRoles as $role) {
+                $roleNode = $contribNode->insertBefore($doc->createElement('role'), $contribNode->firstChild);
+                $roleNode->setAttribute('vocab-identifier', 'https://credit.niso.org/');
+                $roleNode->setAttribute('vocab-term', $roleVocabulary[$role]['name']);
+                $roleNode->setAttribute('vocab-term-identifier', $role);
+                $roleNode->nodeValue = $roleVocabulary[$role]['name'];
+            }
+        }
+        return Hook::CONTINUE;
     }
 }
 
